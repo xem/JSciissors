@@ -17,5 +17,5 @@ Removes <b>~10%</b> of your JS files: <b>4.3k => 4k</b> ... <b>11k => 10k</b>, e
 <button onclick=eval(cut.value)>Execute</button>
 <script>
 /* encoder */ function e(d,b,f,c,a){b=a="";for(f in d+=";;;")c=d.charCodeAt(f),a+=("000000"+c.toString(2)).slice(-7);for(;7<a.length;)c=String.fromCharCode(parseInt(a.substring(0,8),2)),b+=c,a=a.slice(8);return b}
-/* final code */ js.oninput=function(){cut.value="a='"+e(js.value).replace(/\\/g,"\\\\").replace(/(\r|\n|\r\n)/g,"\\n").replace(/'/g,"\\'")+"';b='';for(i in a)b+=(1e7+a.charCodeAt(i).toString(2)).slice(-8);eval(b.replace(/.{0,6}(.?)/g,function(s,f){return f&&String.fromCharCode(parseInt(s,2))}))"}
+/* final code */ js.oninput=function(){cut.value="a='"+e(js.value).replace(/\\/g,"\\\\").replace(/(\r|\n|\r\n)/g,"\\n").replace(/'/g,"\\'")+"';b=c='';for(i in a)b+=(1e7+a.charCodeAt(i).toString(2)).slice(-8);for(i=0;i<b.length-6;i+=7)c+=String.fromCharCode(parseInt(b.substr(i,7),2));eval(c)"}
 </script>
