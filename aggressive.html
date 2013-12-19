@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset=utf-8>
+<a href=//github.com/xem/jsciissors><img style="position:absolute;top:0;right:0;border:0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<style>body{font-family:arial;width:600px;margin:20px auto;text-align:center}textarea{width:600px;height: 200px}#tmp{display:none}</style>
+<h1>JSciissors</h1>
+<h2>(aggressive mode)</h1>
+<h3>The JS packer that cuts your ASCII code</h3>
+Can <b>NOT</b> be used after a JS crusher (only works on printable ASCII chars)
+<br><br>
+Removes <b>~15%</b> of your JS files
+<br><br><br>
+<textarea id=js placeholder='Paste JS here (minimum 3kb)'></textarea>
+<br><br>
+<button onclick=alert(js.value.length)>Count</button>
+<button onclick=eval(js.value)>Execute</button>
+<br><br>
+<textarea id=cut readonly placeholder='Result (Warning: the result is not 100% accurate yet!)'></textarea>
+<br><br>
+<button onclick=alert(cut.value.length)>Count</button>
+<button onclick=eval(cut.value) disabled>Execute</button>
+<br><br>
+<span id=tmp>PS: all your code is encoded in this image<br>&darr;</span>
+<br>
+<canvas id=c></canvas>
+<script>
+/* encoder */
+window.e = function(input, i, character, binary, size, ctx, imageData, image){
+
+  // Binary string
+  binary = "";
+  
+  // Output string
+  output = "";
+  
+  // Loop on ASCII chars, convert them in binary and put the binary code in a string.
+  for(i in (input += ";;;")){
+
+    // ASCII chars < 0x20 are ignored
+    // ASCII chars between 0x20 and 0x39 can be written on 6 bits. ("0xxxxx"). Their 6th bit is removed because it's always 1
+    character = input.charCodeAt(i);
+    if(character < 0x40){
+      character -= 32;
+      binary += ("00000" + character.toString(2)).slice(-6);
+    }
+    
+    // ASCII chars between 0x40 and 0x7F stay on 7 bits ("1xxxxxx")
+    else{
+      binary += ("000000" + character.toString(2)).slice(-7);
+    }
+  }
+  
+  // Compute size of the square canvas where we'll draw 4 bytes / pixel (32 bits)
+  size = Math.ceil(Math.sqrt(binary.length / 32));
+  
+  // Resize canvas
+  c.width = c.height=size;
+  
+  // Initialize imageData
+  ctx = c.getContext('2d');
+  imageData = ctx.createImageData(size, size);
+  
+  // Draw pixels
+  for(i=0; binary.length > 7; i++){
+    imageData.data[i] = parseInt(binary.substring(0, 8), 2);
+    binary = binary.slice(8);
+  }
+  ctx.putImageData(imageData, 0, 0);
+  
+  // Export PNG in base64
+  image = c.toDataURL();
+  
+  // Convert it in a string (remove the last "=" of the base64 and the first bytes of the PNG)
+  image = atob(image.substring(22)).replace(/=/g,'').slice(8);
+  
+  // Return it
+  return image.replace(/\\/g,"\\\\").replace(/(\r|\n|\r\n)/g,'\\n').replace(/'/g,"\\'");
+}
+
+/* final code */ js.oninput=function(){tmp.style.display="inline";cut.value="a='"+e(js.value).replace(/\\/g,"\\\\").replace(/(\r|\n|\r\n)/g,"\\n").replace(/'/g,"\\'")+"';/*to decode*/"}
+</script>
