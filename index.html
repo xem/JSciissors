@@ -1,22 +1,95 @@
-<!doctype html><meta charset=utf-8><a href=//github.com/xem/jsciissors><img style="position:absolute;top:0;right:0;border:0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-<style>body {font-family:arial;width:600px;margin:20px auto;text-align:center}textarea{width:600px;height: 200px}</style>
+<!doctype html>
+<meta charset=utf-8>
+<a href=//github.com/xem/jsciissors><img style="position:absolute;top:0;right:0;border:0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<style>body{font-family:arial;width:600px;margin:20px auto;text-align:center}textarea{width:600px;height:200px;margin:10px 0}#tmp{display:none}</style>
 <h1>✄ JSciissors</h1>
-<h3>The JS packer that cuts your ASCII code</h3>
-<br><br>
-Removes <b>~10%</b> of <u>any</u> JS file.
-<br><br>
-<b>Can be used after a JS crusher.</b>
-<br><br><br>
-<textarea id=js placeholder='Paste JS here (minimum: 1kb - only ASCII characters)'></textarea>
-<br><br>
-<button onclick=alert(js.value.length)>Count</button>
-<button onclick=eval(js.value)>Execute</button>
-<br><br>
-<textarea id=cut readonly placeholder='Result'></textarea>
-<br><br>
-<button onclick=alert(cut.value.length)>Count</button>
-<button onclick=eval(cut.value)>Execute</button>
+Compress your JavaScript files up to <b>25%</b>,
+<br>
+Even if they have been <a href=//closure-compiler.appspot.com>minified</a> and <a href=//dean.edwards.name/packer/>packed</a>!
+<br>
+For better results, use only <a href=en.wikipedia.org/wiki/ASCII#ASCII_printable_characters>printable ASCII characters</a>.
+<br>
+<br>
+<textarea id=js placeholder='Paste your JS here (ASCII only, 1.5kb minimum)'></textarea>
+<br>
+<span id=result>&darr;</span>
+<br>
+<textarea id=cut readonly placeholder='Your compressed JS is here'></textarea>
+<br>
+<sub>NB: The compressed code must be used with a ISO-8859-1 charset.</sub>
+<br>
+<br>
+<br>
+<br>
+© 2014 - <a href=//xem.github.io>Maxime Euzière</a>
 <script>
-/* encoder */ function e(d,b,f,c,a){b=a="";for(f in d+=";")c=d.charCodeAt(f),a+=(1e6+c.toString(2)).slice(-7);for(;7<a.length;)c=String.fromCharCode(parseInt(a.substring(0,8),2)),b+=c,a=a.slice(8);return b}
-/* final code */ js.oninput=function(){cut.value="a='"+e(js.value).replace(/\\/g,"\\\\").replace(/(\r)/g,"\\r").replace(/(\n)/g,"\\n").replace(/'/g,"\\'")+"';b=c='';for(i=0;"+js.value.length+">i;i++)b+=(1e7+a.charCodeAt(i).toString(2)).slice(-8),c+=String.fromCharCode(parseInt(b.substr(i*7,7),2));eval(c)"}
+
+/* Compressor */
+window.c = function(input, i, printable, character, binary){
+
+  // Add a trailing ";" to the source
+  input += ";";
+  
+  // Test if the source contains only printable characters
+  printable = true;
+  for(i in input){
+    character = input.charCodeAt(i);
+    if(character < 0x20){
+      printable = false;
+    }
+  }
+  
+  // Prepare binary string
+  binary = "";
+  
+  // Prepare output string
+  output = "";
+  
+  // Loop on characters, convert them in binary and put the binary code in a string.
+  for(i in input){
+
+    character = input.charCodeAt(i);
+
+    // Characters 0x20 - 0x3F are stored on 6 bits ("0xxxxx"):
+    // - bit 6 is removed because it's always "1"
+    // - bit 8 is removed because it's always "0"
+    if(printable && character < 0x40){
+      character -= 32;
+      binary += (1e5 + character.toString(2)).slice(-6);
+    }
+    
+    // Characters 0x40 - 0x7F are stored on 7 bits ("1xxxxxx"):
+    // bit 8 is removed because it's always "0"
+    else{
+      binary += (1e6 + character.toString(2)).slice(-7);
+    }
+  }
+  
+  // Loop on the binary string, make a character with each block of 8 bits, add it to the output
+  while(binary.length > 7){
+    character = String.fromCharCode(parseInt(binary.substring(0, 8), 2));
+    output += character;
+    binary = binary.slice(8);
+  }
+  
+  // Escape antislashes, line jumps and quotes
+  output = output
+    .replace(/\\/g,"\\\\")
+    .replace(/\r/g,"\\r")
+    .replace(/\n/g,"\\n")
+    .replace(/'/g,"\\'");
+    
+  // Append decompressor
+  if(printable){
+    output = "b=c='';for(i=0;i<" + (input.length-1) + ";i++)z='" + output + "'.charCodeAt(i),b+=(1E7+(z>6E4?0:z>255?[48,,1,6,5,13,7,8,17,23,55,32,41,,84,,,98,0,3,4,9,93,94,39,67,56,33,42,,85,79].indexOf(z%99)+128:z).toString(2)).slice(-8),~~b[0]||(b='01'+b.slice(1)),c+=String.fromCharCode(parseInt(b.substr(0,7),2)),b=b.slice(7);eval(c)";
+  }
+  else{
+    output = "b=c='';for(i=0;i<" + (input.length-1) + ";i++)z='" + output + "'.charCodeAt(i),b+=(1E7+(z>6E4?0:z>255?[48,,1,6,5,13,7,8,17,23,55,32,41,,84,,,98,0,3,4,9,93,94,39,67,56,33,42,,85,79].indexOf(z%99)+128:z).toString(2)).slice(-8),c+=String.fromCharCode(parseInt(b.substr(i*7,7),2));eval(c)";
+  }
+  
+  return output;
+}
+
+// Process
+js.oninput=function(){percent=-(Math.round((js.value.length/cut.value.length)*1000,1)-1000)/10;cut.value=c(js.value);result.innerHTML="&darr; " + (percent < 0 ? percent : "+" + percent) + "%" }
 </script>
