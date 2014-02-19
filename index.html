@@ -15,8 +15,7 @@ For better results, use only <a href=//en.wikipedia.org/wiki/ASCII#ASCII_printab
 <span id=result>&darr;</span>
 <br>
 <textarea id=cut readonly placeholder='Your compressed JS is here'></textarea>
-<br>
-<sub>NB: The compressed code must be used with a ISO-8859-1 charset.</sub>
+<button onclick=eval(cut.value)>Execute</button>
 <br>
 <br>
 <br>
@@ -91,5 +90,5 @@ window.c = function(input, i, printable, character, binary){
 }
 
 // Process
-js.oninput=function(){percent=-(Math.round((js.value.length/cut.value.length)*1000,1)-1000)/10;cut.value=c(js.value);result.innerHTML="&darr; " + (percent < 0 ? percent : "+" + percent) + "%" }
+js.onkeyup=function(){percent=-(Math.round((js.value.length/cut.value.length)*1000,1)-1000)/10;cut.value=c(js.value);result.innerHTML="&darr; " + (percent < 0 ? percent : "+" + percent) + "%" }
 </script>
