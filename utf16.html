@@ -7,23 +7,18 @@ a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligu
 a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Fusce vulputate eleifend sapien. Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus. Nullam accumsan lorem in dui. Cras ultricies mi eu turpis hendrerit fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; In ac dui quis mi consectetuer lacinia. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Sed aliquam ultrices mauris. Integer ante arcu, accumsan a, consectetuer eget, posuere ut, mauris. Praesent adipiscing. Phasellus ullamcorper ipsum rutrum nunc. Nunc nonummy metus. Vestibulum volutpat pretium libero. Cras id dui. Aenea";
 
 // 100 chars
-a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m";
+//a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m";
 
 // Debug
-console.log("Source: "+ a.length+ "bytes");
-console.log(a);
+console.log("Source string ("+a.length+" bytes):\n"+a);
 b="";
 for(i in a){
-  b+=(1e6+a.charCodeAt(i).toString(2)).slice(-7)+" ";
+  b+=(1e6+a.charCodeAt(i).toString(2)).slice(-7)+"_";
 }
-console.log(b);
-console.log("");
-console.log("");
-
+//console.log("Source binary: ",b);
 
 // Encoder
 
-console.log("Encoding");
 b="";
 c="";
 d="";
@@ -40,41 +35,36 @@ for(i in a){
   }
 }
 
-console.log("Binary trimmed: ", b);
+//console.log("Binary trimmed: ", b);
 
 while(b){
   if(/^11011/.test(b)){
     b=b.slice(5);
-    e+=110110+b.slice(0,10)+" ";
+    e+=110110+b.slice(0,10)+"_";
     c+=String.fromCharCode(parseInt(110110+b.slice(0,10),2));
     b=b.slice(10);
-    e+=110111+b.slice(0,10)+" ";
+    e+=110111+b.slice(0,10)+"_";
     c+=String.fromCharCode(parseInt(110111+b.slice(0,10),2));
     b=b.slice(10);
   }
   else{
-    e+=b.slice(0,16)+" ";
-    c+=String.fromCharCode(parseInt(b.slice(0,16)));
+    e+=b.slice(0,16)+"_";
+    c+=String.fromCharCode(parseInt(b.slice(0,16),2));
     b=b.slice(16);
   }
 }
 
-console.log("Binary charCode: ", e);
-console.log("");
-console.log("");
-console.log("");
-
-console.log("Encoded: ", c.length*2+" bytes");
-console.log(c);
+//console.log("Binary charCode:", e);
+console.log("Encoded string ("+c.length*2,"bytes):\n"+c);
 
 // Decoder
 e=""
 f="";
 g="";
-for(i=0;i<44;i++){
+for(i=0;i<c.length;i++){
   g=c.charCodeAt(i);
   if(g>>11==27){
-    f+=110110+g.toString(2).slice(-10)+c.charCodeAt(i+1).toString(2).slice(-10);
+    f+=110110+g.toString(2).slice(-9)+c.charCodeAt(i+1).toString(2).slice(-10);
     i++;
   }
   else{
@@ -82,20 +72,15 @@ for(i=0;i<44;i++){
   }
 }
 
-console.log("Binary: ", f);
+//console.log("Decoded binary:",f);
 
-for(i=0;i<100;i++){
+while(f){
   if(f[0]=="0"){
     f="01"+f.slice(1);
   }
-  e+=String.fromCharCode(f.slice(0,7));
+  e+=String.fromCharCode(parseInt(f.slice(0,7),2));
   f=f.slice(7);
 }
 
-console.log("Decoded: ", e.length+" bytes");
-console.log(e);
-
-
-
-
+console.log("Decoded string: ("+e.length,"bytes):\n"+e);
 </script>
