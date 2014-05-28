@@ -82,13 +82,6 @@ document.write("\n\nEncoded string: ("+c.length*2+" bytes in UTF-16):\n"+c);
 
 
 // Golfed decoder
-
-
-// ok
-N=c.length;
-e=f="";for(i=0;i<N;i++)g=c[z="charCodeAt"](i),27==g>>11?(f+=11011+g[y](2)[x](-10)+c[z](i+1)[y](2)[x](-10),i++):f+=(1E15+g[y="toString"](2))[x="slice"](-16);for(;f;)+f[0]||(f="01"+f[x](1)),e+=String.fromCharCode(parseInt(f[x](0,7),2)),f=f[x](7)
-
-// ok
 e=f="";z=0;for(i in c)g=c.charCodeAt(i),z?(f+=g[y](2)[x](-10),z=0):27==g>>11?(f+=11011+g[y](2)[x](-10),z=1):f+=(1E15+g[y="toString"](2))[x="slice"](-16);for(;f;)+f[0]||(f="01"+f[x](1)),e+=String.fromCharCode(parseInt(f[x](0,7),2)),f=f[x](7)
 
 
