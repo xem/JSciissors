@@ -9,11 +9,10 @@ a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligu
 // 100 chars
 //a="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m";
 
+document.write("Original string: ("+a.length+" bytes in ASCII):\n"+a);
 
-/*
 // Encoder
-
-a+=" ";
+a+="  ";
 b="";
 c="";
 d="";
@@ -30,7 +29,7 @@ for(i in a){
 
 while(b){
   if(/^11011/.test(b)){
-    b=b.slice(5);
+    //b=b.slice(5);
     c+=String.fromCharCode(parseInt(110110+b.slice(0,10),2));
     b=b.slice(10);
     c+=String.fromCharCode(parseInt(110111+b.slice(0,10),2));
@@ -42,16 +41,17 @@ while(b){
   }
 }
 
+document.write("\n\nEncoded string: ("+c.length*2+" bytes in UTF-16):\n"+c);
+
 // Decoder
 
+/*
 e=""
 f="";
-g="";
 for(i=0;i<c.length;i++){
   g=c.charCodeAt(i);
   if(g>>11==27){
-    f+=11011+g.toString(2).slice(-10)+c.charCodeAt(i+1).toString(2).slice(-10);
-    i++;
+    f+=g.toString(2).slice(-10);
   }
   else{
     f+=(1e15+g.toString(2)).slice(-16);
@@ -65,28 +65,13 @@ while(f){
   e+=String.fromCharCode(parseInt(f.slice(0,7),2));
   f=f.slice(7);
 }
-
-document.write("\n\nDecoded string: ("+e.length+" bytes in ASCII):\n"+e);
-
 */
 
-
-
-document.write("Original string: ("+a.length+" bytes in ASCII):\n"+a);
-
-// Golfed encoder
-
-a+="  ";d=c=b="";for(i in a)d=a.charCodeAt(i),64>d?(d-=32,b+=(1E5+d.toString(2)).slice(-6)):b+=(1E6+d.toString(2)).slice(-7);for(;b;)/^11011/.test(b)?(b=b.slice(5),c+=String.fromCharCode(parseInt(110110+b.slice(0,10),2)),b=b.slice(10),c+=String.fromCharCode(parseInt(110111+b.slice(0,10),2)),b=b.slice(10)):(c+=String.fromCharCode(parseInt(b.slice(0,16),2)),b=b.slice(16));
-
-document.write("\n\nEncoded string: ("+c.length*2+" bytes in UTF-16):\n"+c);
-
-
 // Golfed decoder
-e=f="";z=0;for(i in c)g=c.charCodeAt(i),z?(f+=g[y](2)[x](-10),z=0):27==g>>11?(f+=11011+g[y](2)[x](-10),z=1):f+=(1E15+g[y="toString"](2))[x="slice"](-16);for(;f;)+f[0]||(f="01"+f[x](1)),e+=String.fromCharCode(parseInt(f[x](0,7),2)),f=f[x](7)
 
+f=e="";for(i in c)f+=27==(g=c.charCodeAt(i))>>11?g[y](2)[z](-10):(1E15+g[y="toString"](2))[z="slice"](-16);for(;f;)+f[0]||(f="01"+f[z](1)),e+=String.fromCharCode(parseInt(f.slice(0,7),2)),f=f[z](7)
 
 document.write("\n\nDecoded string: ("+e.length+" bytes in ASCII):\n"+e);
-
 
 // Check if all is okay
 
@@ -95,9 +80,4 @@ for(i in a){
     console.log("bad char #"+i+":"+a[i]+"!="+e[i]);
   }
 }
-
-
-
-
-
 </script>
